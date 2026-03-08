@@ -1,6 +1,3 @@
-# Notebooks
-*.ipynb
-
 # Generated data
 images/
 outputs/
