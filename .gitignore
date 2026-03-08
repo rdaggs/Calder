@@ -1,0 +1,19 @@
+# Notebooks
+*.ipynb
+
+# Generated data
+images/
+outputs/
+stack/
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# macOS
+.DS_Store%                                                                                                                                                                                                                 (calder_venv) riley@Rileys-MacBook-Pro Calder_og % 
+
