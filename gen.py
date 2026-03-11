@@ -10,7 +10,8 @@ from IPython.display import display, HTML, Image as IPyImage
 device = "mps"
 print(f"Using device: {device}")    
 
-IMAGES_DIR = "images"
+STACK_DIR = "stack"
+ORDER_FILE = "order.txt"
 GIFS_DIR = "outputs/dir"
 os.makedirs(GIFS_DIR,exist_ok=True)
 
@@ -107,15 +108,16 @@ def main():
     print("Model loaded.")
 
     #===============================LOAD ANCHORS==============================#
-    supported = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
-    image_files = sorted(
-        f for f in os.listdir(IMAGES_DIR)
-        if os.path.splitext(f)[1].lower() in supported
-    )
-    anchors = [load_image(os.path.join(IMAGES_DIR, f)).convert("RGB").resize(SIZE)
-        for f in image_files
-    ]
-    print(f"Loaded {len(anchors)} anchor images: {image_files}")
+    with open(ORDER_FILE) as f:
+        order_lines = [l.strip() for l in f if l.strip()]
+
+    image_paths = []
+    for line in order_lines:
+        folder, filename = line.split(" - ", 1)
+        image_paths.append(os.path.join(STACK_DIR, folder, filename))
+
+    anchors = [load_image(p).convert("RGB").resize(SIZE) for p in image_paths]
+    print(f"Loaded {len(anchors)} anchor images from order.txt")
 
     #===============================GENERATE GIF==============================#
     all_frames = {}
