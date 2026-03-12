@@ -120,10 +120,21 @@ def main():
     print(f"Loaded {len(anchors)} anchor images from order.txt")
 
     #===============================GENERATE GIF==============================#
-    all_frames = {}
-    chain_src  = anchors[0]
+    existing = [int(f[:-4]) for f in os.listdir(GIFS_DIR) if f.endswith(".gif") and f[:-4].isdigit()]
+    start_i  = max(existing) + 1 if existing else 1
+
+    if start_i > 1:
+        prev_gif = Image.open(os.path.join(GIFS_DIR, f"{start_i - 1}.gif"))
+        prev_gif.seek(prev_gif.n_frames - 1)
+        chain_src = prev_gif.convert("RGB").resize(SIZE)
+        print(f"Resuming from {start_i}.gif (last frame of {start_i - 1}.gif loaded)")
+    else:
+        chain_src = anchors[0]
+
 
     for i, tgt in enumerate(anchors[1:] + [anchors[0]], start=1):
+        if i < start_i:
+            continue
         print(f"Generating {i}.gif ...")
         frames = generate_gif(n=i, src=chain_src, tgt=tgt, pipe=pipe, M=M, SEED=SEED, PROMPT=PROMPT, GUIDANCE=GUIDANCE, NUM_STEPS=NUM_STEPS, DURATION=DURATION)
         # all_frames[i] = frames
